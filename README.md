@@ -14,7 +14,6 @@
 
 NeoPilot is a development framework, a skill that takes your idea, asks questions exactly where the idea has real forks, and then writes the specification itself, thinks through what you didn't, breaks the work into tasks, and assembles the whole project. You don't need to read the specification, estimate tasks, or understand code.
 
-It works standalone: nothing else to install.
 
 <p align="center">
   <a href="assets/neopilot-dashboard.png"><img src="assets/dash-metrics.png" width="380" alt="Metrics: project progress, brief coverage, time, debt"></a>
@@ -27,6 +26,25 @@ It works standalone: nothing else to install.
 **And you can see what's happening at all times.** At the start of a build the agent opens the dashboard itself — a single HTML file you don't have to find or launch. It shows how much of the project is already done, how much of your task is covered, which stage the build is at, what is happening right now, and how much is left. Timers run live, the page refreshes itself, no internet needed.
 
 ---
+
+## How it works
+
+<p align="center">
+  <img src="assets/neopilot-architecture.svg" alt="How NeoPilot flies your idea: decide what to build, build it, prove it — eight stages with gates G1–G4, a repair loop and optional polish, on top of the contract and project memory, three dials, and the rules that never bend" width="100%">
+</p>
+
+The main principle: **the process is the product**. Code is written in the penultimate phase; everything before it is finding out what exactly to build, everything after it is proving that exactly that was built.
+
+| Phase | What happens |
+|---|---|
+| **Preparation** | Project folder setup, `.gitignore`, instruments — the dashboard opens immediately |
+| **Requirements** | Your text → numbered requirements, verbatim |
+| **Briefing** | Questions only about real forks, first the ones without which the project can't be built: payment, hosting, access |
+| **Specification** | Requirements unfold into worked-out scenarios |
+| **Plan** | The specification is cut into tasks — or not cut, if the task is small — and laid out into waves: what can be built simultaneously and what only in sequence |
+| **Development** | One task = one separate agent with clean memory, one commit; independent tasks run in parallel |
+| **Code review** | After every task: conformance to the brief, conformance to the specification, code quality |
+| **Acceptance** | A separate agent launches the project and checks the result against your original task; a project description for the future; a report |
 
 ## Installation
 
@@ -149,6 +167,7 @@ You can switch at any time, just say:
 ```
 
 ---
+
 
 ## Three modes
 
@@ -285,21 +304,6 @@ You won't be asked about this — at the start of the build you'll get one line:
 
 ---
 
-## How it works
-
-The main principle: **the process is the product**. Code is written in the penultimate phase; everything before it is finding out what exactly to build, everything after it is proving that exactly that was built.
-
-| Phase | What happens |
-|---|---|
-| **Preparation** | Project folder setup, `.gitignore`, instruments — the dashboard opens immediately |
-| **Requirements** | Your text → numbered requirements, verbatim |
-| **Briefing** | Questions only about real forks, first the ones without which the project can't be built: payment, hosting, access |
-| **Specification** | Requirements unfold into worked-out scenarios |
-| **Plan** | The specification is cut into tasks — or not cut, if the task is small — and laid out into waves: what can be built simultaneously and what only in sequence |
-| **Development** | One task = one separate agent with clean memory, one commit; independent tasks run in parallel |
-| **Code review** | After every task: conformance to the brief, conformance to the specification, code quality |
-| **Acceptance** | A separate agent launches the project and checks the result against your original task; a project description for the future; a report |
-
 ### About cutting into tasks
 
 Every task is a separate agent that gets up to speed on the project from scratch: reads the contracts, studies the code, figures out the stack. That's expensive. So NeoPilot cuts by tiers, not "the finer the safer":
@@ -415,6 +419,16 @@ npx skills remove neopilot -g -y && npx skills add Atlantic83/neopilot --skill n
 ```
 
 For the agent to see the new version, **restart the session** — skills are loaded at startup.
+
+---
+
+## Architecture
+
+Who talks to whom during a build. The orchestrator holds the whole run but writes no code: it records your brief as a contract, hands tasks to fresh subagents, and tracks the run state that feeds the dashboard. Every diff is reviewed, and the finished project is checked by an agent that sees only your original brief.
+
+<p align="center">
+  <img src="assets/neopilot-architecture-tech.svg" alt="NeoPilot components: the user's brief goes to the orchestrator, which records the contract and spec in .neopilot/, dispatches tasks to fresh-context executor subagents, whose commits land in the project repo; reviewers check every diff, blind acceptance runs the project against the brief, project memory is written from the finished code, and run state feeds the live dashboard" width="100%">
+</p>
 
 ---
 
