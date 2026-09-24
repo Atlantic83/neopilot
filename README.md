@@ -78,6 +78,34 @@ Without `-g` the skill is installed only into the current project folder.
 
 **Requires:** [Node.js](https://nodejs.org) (for `npx`) and any supported AI agent — Claude Code, Cursor, Codex and [70+ others](https://github.com/vercel-labs/skills#supported-agents). Nothing else.
 
+<details>
+<summary>Claude Code plugin marketplace</summary>
+
+In Claude Code:
+
+```
+/plugin marketplace add Atlantic83/neopilot
+/plugin install neopilot@neopilot
+```
+
+</details>
+
+<details>
+<summary>Without Node.js — manual install</summary>
+
+The skill is just the `skills/neopilot` folder. Clone the repo and copy it into your agent's global skills directory:
+
+```bash
+git clone https://github.com/Atlantic83/neopilot
+cp -r neopilot/skills/neopilot ~/.claude/skills/          # Claude Code
+cp -r neopilot/skills/neopilot ~/.agents/skills/          # Codex, Cline, Warp, Zed…
+cp -r neopilot/skills/neopilot ~/.config/agents/skills/   # Amp, Replit…
+```
+
+Or download the repo as ZIP (Code → Download ZIP) and unpack `skills/neopilot` the same way.
+
+</details>
+
 ---
 
 ## How to use

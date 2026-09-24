@@ -2,6 +2,7 @@
 name: neopilot
 description: Use when the user dictates an app, site, bot, or feature to build end-to-end and expects a finished result without reviewing specs, tickets, or code — vibecoding sessions, non-technical users, "build it turnkey", "build it for me", "don't ask unnecessary questions" requests. Also use when the user invokes /neopilot, or asks for a build in a named mode, depth or finish — "full auto", "interview mode", "grill me", "manual mode", "strict to the brief", "think it through deeply", "polish to a benchmark".
 argument-hint: "[full|semi|interview|manual] [strict|deep] [polish] what to build or path to brief.md"
+license: MIT
 ---
 
 # NeoPilot
