@@ -1,0 +1,171 @@
+# Phase 9 — Project memory
+
+The file the **next** session reads. Not a phase in sequence — started in Phase 0, topped up during the build, finished in Phase 8.
+
+Four files describe this project and they are not interchangeable. Confusing them is how documentation rots.
+
+| File | Question it answers | Lifetime |
+|---|---|---|
+| `.neopilot/<dir>/` | what was promised and what was delivered **in this run** | forever, but it is history |
+| `.neopilot/<dir>/interfaces.md` | what the previous tickets built, for the tickets still to come | **dies with the run** |
+| `CLAUDE.md` / `AGENTS.md` | what an agent needs to work in this repo **tomorrow** | forever, and it is the present tense |
+| `docs/adr/` | **why** it is the way it is, and what was considered instead | forever, and it is past tense on purpose |
+
+The last two are what this file is about. Everything in the memory file must be true of the repository *as it stands* — not of the plan, not of the run that produced it. Everything in an ADR is true of the moment it was decided, and stays written even when it is later reversed; that is what makes it a record rather than a second, staler copy of the memory file.
+
+**Phase 0's share of this file is not here — it is `phases/0-memory.md`**: which file to write, and the skeleton to put in it. That is Moment 1, which is why the moments below start at two. This file is read **inside Phase 5** for what may be appended during the build, and **in Phase 8** for the full description and the ADRs. Nothing below applies until there is code to describe.
+
+## Where the content lives — the markers
+
+Everything NeoPilot writes sits between two markers, in every case, including a file it created itself:
+
+```markdown
+<!-- neopilot:start -->
+...
+<!-- neopilot:end -->
+```
+
+One rule, and it buys two things: updating is «replace what is between the markers», and **anything the user wrote outside them is untouchable**. A brownfield repo whose CLAUDE.md carries a team's hard-won rules must come out of an NeoPilot run with those rules intact.
+
+If the markers are missing on a later run but NeoPilot's sections are recognisably there, wrap them — do not append a second copy.
+
+## Moment 2 — during the build
+
+Append only **facts that were discovered and cost something to discover**. One line each, no rewrite of the file:
+
+- the real test command, once it is known — and how to run a single file;
+- a gotcha that ate time: an ordering dependency, a version pin, a platform quirk;
+- a new variable in `.env.example`;
+- a decision a subagent had to make that the next one must not re-litigate.
+
+That is the whole list. What must **not** go in, from the CLAUDE.md quality rules:
+
+- generic advice ("write tests", "use clear names") — true everywhere, useful nowhere;
+- restatements of the obvious ("class `UserService` works with users") — the name already said it;
+- one-off fixes and commit-by-commit history — that is what `.neopilot/` and git are for;
+- long explanations of a standard technology — a link or one clause, never a paragraph;
+- anything that duplicates `interfaces.md` while the run is still going. Interfaces are folded in **once**, at the end.
+
+If nothing was discovered during a ticket, nothing is written. Most tickets write nothing, and that is the correct rate.
+
+## Moment 3 — the full description (Phase 8)
+
+Now the code exists, so now the architecture can be described from the code instead of from the plan.
+
+**Spawn a subagent.** It runs in parallel with the blind-acceptance agent — they read the same finished repo and never see each other's output.
+
+It receives: the repository, the current memory file, `interfaces.md`, the tier, and the commands to run and test the project.
+
+**It must not receive `spec.md` or the tickets.** A memory written from the spec documents intentions; the next session trusts it and gets lied to by a file whose whole job is to be trusted. Same reasoning as the blind acceptance — different purpose, identical mechanism.
+
+Its brief:
+
+> Describe the project so that an agent opening this repository for the first
+> time starts working without reconnaissance. The source is only the code you
+> can see.
+>
+> Write densely: one line per thought. Don't retell the obvious from names,
+> don't give generic advice, don't explain what well-known technologies are.
+> Every command must run when copy-pasted, every path must exist.
+>
+> If something isn't in the code — the section doesn't exist. An empty section
+> is worse than a missing one.
+
+### What the sections are, by tier
+
+The file scales with the project, exactly like the ticket tiers do.
+
+**T0–T1 — a short file:**
+
+| Section | What's inside |
+|---|---|
+| Title and one-liner | what this is and who it's for |
+| Commands | install, run, test, build — verified |
+| Structure | a 5–15 line tree, each folder with its purpose |
+| Pitfalls | what's non-obvious and has already bitten someone |
+| How NeoPilot works here | from the skeleton, unchanged |
+
+**T2–T3 — plus:**
+
+| Section | What's inside |
+|---|---|
+| Key files | entry points and the modules that will be touched most often |
+| Architecture | how the parts connect: data flow, who calls whom, where the boundaries are |
+| Code conventions | the ones adopted in this project, not in the world at large |
+| Environment | variable names and what each is for — **never values** |
+| Tests | with what and how; where they live; how to run a single file |
+
+### Folding in interfaces.md
+
+`interfaces.md` is a working contract between tickets, and its life ends with the run. Its durable content — public signatures, schemas, event formats, module ownership — becomes the Architecture and Key files sections. What does not survive: the per-ticket framing ("From task 03…"), anything already obvious from the code, and any instruction addressed to a subagent.
+
+The file itself stays in `.neopilot/<dir>/` as the run's record. It is not deleted and it is not maintained.
+
+### Before writing — verify
+
+Currency is the criterion this file fails first and most quietly. So, before the block is written:
+
+1. **Verify the commands** it documents — at minimum install, test, and build. A command that fails does not go in.
+   **Do not re-run what has already been run.** Three subagents plus the orchestrator all reaching for `install` on the same tree is the slowest thing in Phase 8, and installing dependencies is the slowest part of that. The orchestrator ran the full suite before it launched this slot (`phases/5-subagents.md`, step 5) and passes its command and result in the prompt; the blind checker is launching the project in parallel and returns the commands it actually used. **Verify only what neither of them covered** — and take the rest from what you were handed, naming in the block the command that was run, not a command you assume works.
+2. **Check every path** exists.
+3. **Grep the block for secret values** — the redaction gate from `phases/1-manifest.md` applies here as it does everywhere. Variable names, never values.
+4. **Check the length against the tier.** A landing page with a two-page memory file has been padded, and padding is how a reader learns to skim.
+
+Then write the block between the markers, commit it with the final commit, and note the chosen file in the Phase 8 report under "What lives where".
+
+## Moment 4 — the ADRs (Phase 8, tier T2+)
+
+**Runs at tier T2 and above.** Below that there is not enough decided to be worth a folder, and what little there is goes in the memory file's Pitfalls.
+
+The memory file answers "how to work with this". It deliberately does not answer "why it is this way" — a file that tries to be both grows past the length at which anyone reads it, and the reasoning is what gets skimmed. But the reasoning is exactly what the next session needs in order not to undo this one: code shows what was chosen and is silent about what was rejected and why, so an agent reading only the code will cheerfully re-open a settled question and pick the option that was already tried.
+
+`spec.md` holds all of it right now and is worthless the day the work ships. So this is the routing step: **what deserves to survive comes out of the spec and into `docs/adr/`, and the spec stays throwaway.**
+
+### What earns an ADR
+
+Three sources, and nothing else:
+
+| Source | Why it qualifies |
+|---|---|
+| every `D##` row | the build proved the plan wrong. This is the highest-value kind: it records a road already walked and found closed |
+| load-bearing entries from **Implementation decisions** | the data model, the module boundaries, an external service, a schema — anything whose reversal means rebuilding rather than editing |
+| a term the project uses in its own way | one ADR for the vocabulary, if the spec introduced any. This is what makes the next spec speak the same language instead of inventing synonyms |
+
+What does **not** earn one: a decision with no alternative (there was one library and you used it), anything a linter or the framework decided, and anything that is simply the obvious default. An ADR asserting that you chose the standard option for the standard reason teaches nothing and dilutes the ones that do.
+
+Three to six files on a T2 build, five to twelve on T3. More than that means the filter was not applied.
+
+### Spawn it in parallel with the other two
+
+It receives **`spec.md` and `manifest.md`, and not the repository** — it documents decisions, not code, and giving it the repo turns it into a second memory agent writing a worse version of the same file.
+
+> From the attached specification and manifest, write one ADR per decision
+> that is expensive to reverse, and one per `D##` row.
+>
+> Format — `docs/adr/NNNN-<short-name>.md`, numbered from `0001`, one file
+> per decision. Inside, four sections and nothing else:
+>
+> **Context** — what was known at decision time. One or two lines.
+> **Decision** — what was decided, in the present tense: "Requests are stored
+> in SQLite".
+> **Why** — and above all, what was considered and rejected. A rejected option
+> without a reason is useless: write exactly why it didn't fit.
+> **Consequences** — what we now have to live with, including the unpleasant.
+>
+> For `D##`, the context is what the plan assumed, and the decision is what
+> the code proved. Such an ADR is worth more than the rest: it closes a road
+> someone would otherwise walk again.
+>
+> Don't write an ADR for a decision that had no alternative. Don't retell the
+> specification. Don't describe the code — you haven't seen it, and that's not
+> your job.
+
+If `docs/adr/` already exists, **continue its numbering and its format** — an existing convention in the repo beats this one, exactly as `CONTEXT.md` beats invented vocabulary in Phase 3. Never renumber what is already there.
+
+The ADRs go in with the final commit, alongside the memory file, and get one line in the report under "What lives where".
+
+## On resume
+
+The memory file is the **first** thing to read on resume, before `state.js` — it is the cheapest possible re-entry into a project. If it is missing or plainly stale against the code, that is a defect of the previous run: fix it as part of the current one, do not work around it.
+
+`docs/adr/` is **not** read on resume — it is for the session after this one, and reading a folder of past reasoning is exactly the kind of re-orientation the memory file exists to make unnecessary. Read one only when a decision is about to be reversed.
