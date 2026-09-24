@@ -1,0 +1,29 @@
+{
+  "name": "neopilot",
+  "description": "NeoPilot — dictate what you need built, get a finished project.",
+  "owner": {
+    "name": "Atlantic83"
+  },
+  "plugins": [
+    {
+      "name": "neopilot",
+      "source": "./skills",
+      "displayName": "NeoPilot",
+      "description": "Dictate an app, site, bot, or feature — NeoPilot briefs the real forks, writes the spec, builds it with subagents, and verifies the result against your original task.",
+      "version": "1.0.0",
+      "author": {
+        "name": "Atlantic83"
+      },
+      "homepage": "https://github.com/Atlantic83/neopilot",
+      "repository": "https://github.com/Atlantic83/neopilot",
+      "license": "MIT",
+      "keywords": [
+        "vibecoding",
+        "turnkey",
+        "spec-driven",
+        "project-builder",
+        "agent-skill"
+      ]
+    }
+  ]
+}
