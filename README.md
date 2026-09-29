@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://skills.sh/Atlantic83/neopilot"><img src="https://skills.sh/b/Atlantic83/neopilot" alt="skills.sh"></a>
+  <a href="https://skills.sh/Atlantic83/neopilot-macos"><img src="https://skills.sh/b/Atlantic83/neopilot-macos" alt="skills.sh"></a>
 </p>
 
 <p align="center"><strong>Describe in words what you need built — get a finished project.</strong></p>
@@ -48,7 +48,7 @@ The main principle: **the process is the product**. Code is written in the penul
 
 ## Installation
 
-> **This is the `macos` branch** — for macOS. The commands below install exactly it (`#macos`), not the default branch.
+> **This is the macOS build of NeoPilot** — a separate repository, `Atlantic83/neopilot-macos`. The Windows build lives at `Atlantic83/neopilot`.
 
 ### If you don't want to open a terminal
 
@@ -57,7 +57,7 @@ Open your AI agent — Claude Code, Cursor, Codex — and paste this text:
 ```
 Install the NeoPilot skill for me. Run in the terminal:
 
-npx skills add "Atlantic83/neopilot#macos" --skill neopilot -g -y -a <insert yourself: claude-code, cursor, codex>
+npx skills add Atlantic83/neopilot-macos --skill neopilot -g -y -a <insert yourself: claude-code, cursor, codex>
 
 If npx is not found — give me a link to download Node.js and wait.
 Don't install anything else.
@@ -73,7 +73,7 @@ This is the command for a **first-time** install. To update later — [a differe
 Copy this line:
 
 ```bash
-npx skills add "Atlantic83/neopilot#macos" -g
+npx skills add Atlantic83/neopilot-macos -g
 ```
 
 The installer will ask which agents to install for — just confirm. The `-g` flag installs the skill globally, so it's available in all your projects.
@@ -82,7 +82,7 @@ The installer will ask which agents to install for — just confirm. The `-g` fl
 <summary>One-command install, no questions</summary>
 
 ```bash
-npx skills add "Atlantic83/neopilot#macos" --skill neopilot -a claude-code -g -y
+npx skills add Atlantic83/neopilot-macos --skill neopilot -a claude-code -g -y
 ```
 
 | Flag | What it does |
@@ -104,11 +104,9 @@ Without `-g` the skill is installed only into the current project folder.
 In Claude Code:
 
 ```
-/plugin marketplace add Atlantic83/neopilot
+/plugin marketplace add Atlantic83/neopilot-macos
 /plugin install neopilot@neopilot
 ```
-
-Note: the plugin marketplace always installs the default branch — for this `macos` build use the `npx` commands above.
 
 </details>
 
@@ -118,10 +116,10 @@ Note: the plugin marketplace always installs the default branch — for this `ma
 The skill is just the `skills/neopilot` folder. Clone the repo and copy it into your agent's global skills directory:
 
 ```bash
-git clone -b macos https://github.com/Atlantic83/neopilot
-cp -r neopilot/skills/neopilot ~/.claude/skills/          # Claude Code
-cp -r neopilot/skills/neopilot ~/.agents/skills/          # Codex, Cline, Warp, Zed…
-cp -r neopilot/skills/neopilot ~/.config/agents/skills/   # Amp, Replit…
+git clone https://github.com/Atlantic83/neopilot-macos
+cp -r neopilot-macos/skills/neopilot ~/.claude/skills/          # Claude Code
+cp -r neopilot-macos/skills/neopilot ~/.agents/skills/          # Codex, Cline, Warp, Zed…
+cp -r neopilot-macos/skills/neopilot ~/.config/agents/skills/   # Amp, Replit…
 ```
 
 Or download the repo as ZIP (Code → Download ZIP) and unpack `skills/neopilot` the same way.
@@ -401,7 +399,7 @@ Update the NeoPilot skill to the latest version. Run in the terminal:
 npx skills update neopilot -g
 
 If it replies that everything is already up to date but the version is old — reinstall:
-npx skills remove neopilot -g -y && npx skills add "Atlantic83/neopilot#macos" --skill neopilot -g -y -a <insert yourself: claude-code, cursor, codex>
+npx skills remove neopilot -g -y && npx skills add Atlantic83/neopilot-macos --skill neopilot -g -y -a <insert yourself: claude-code, cursor, codex>
 
 When done — reply in one line with what was updated, and remind me to restart the session.
 ```
@@ -419,7 +417,7 @@ npx skills remove neopilot -g
 **If the skill behaves like an old version.** `update` checks the source version, not the files on disk: if the local copy was edited or corrupted, it will answer "already up to date" and do nothing. Fixed by reinstalling:
 
 ```bash
-npx skills remove neopilot -g -y && npx skills add "Atlantic83/neopilot#macos" --skill neopilot -g -y -a claude-code
+npx skills remove neopilot -g -y && npx skills add Atlantic83/neopilot-macos --skill neopilot -g -y -a claude-code
 ```
 
 For the agent to see the new version, **restart the session** — skills are loaded at startup.
