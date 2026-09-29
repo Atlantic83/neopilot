@@ -17,9 +17,9 @@ They cannot drift apart in opposite directions, because they are not equals: `st
 
 ```bash
 A=$(git rev-parse --show-toplevel 2>/dev/null || pwd -P)/.neopilot
-TPL=$(find -L ~/.claude/skills ~/.agents/skills ~/.claude/plugins .claude/skills .agents/skills \
-        .devin/skills ~/.config/devin/skills \
-        -maxdepth 6 -name dashboard-template.html 2>/dev/null | head -1)
+TPL=$(find -L ~/.claude/skills ~/.agents/skills ~/.claude/plugins ~/.config/agents/skills \
+        .claude/skills .claude/plugins .agents/skills .devin/skills ~/.config/devin/skills \
+        -path '*/neopilot/phases/dashboard-template.html' 2>/dev/null | head -1)
 [ -n "$TPL" ] && TPL=$(cd "$(dirname "$TPL")" && pwd -P)/dashboard-template.html
 command -v cygpath >/dev/null 2>&1 && { A=$(cygpath -m "$A"); [ -n "$TPL" ] && TPL=$(cygpath -m "$TPL"); }
 echo "skillDir = ${TPL%/phases/*}"
@@ -29,9 +29,9 @@ cp "${TPL%/phases/*}/tools/sync.py" "$A/sync.py"
 
 **Every path here is absolute, and the `echo` runs before the copy.** Four ways this used to fail, all measured on 2026-08-19 and all silent: a chained `cp && ln && echo` drops `skillDir` when `ln` refuses; `find` returns a *relative* path when the skill is installed inside the project (`.claude/skills/`), and a relative `skillDir` is one no subagent can open; a run started from a subdirectory built `.neopilot/` in the wrong place; and `cp` onto a directory Phase 0 step 3 had not created yet failed outright. Hence `$A` from the git root, `pwd -P` (which also resolves the symlink skills are installed through), and `mkdir -p`. `ln -sfn`, not `-sf`: on a symlink pointing at a directory BSD `ln` without `-n` writes *inside* it and reports success. **The `cygpath` line is a no-op off Windows** — in Git Bash `pwd -P` yields the MSYS form `/c/Users/...`, which a subagent launched outside an MSYS shell cannot open, and `skillDir` is exactly the path the subagent contracts travel by; `cygpath -m` rewrites it as `C:/Users/...`, readable by both worlds. On MSYS without developer mode `ln` also silently *copies* instead of linking — survivable here, because §3 navigates to `/dashboard.html` rather than `/`.
 
-**`find -L`, and no `*` anywhere in it** — both measured on 2026-08-17. Skills are installed as symlinks (`~/.claude/skills/neopilot` → `~/.agents/skills/neopilot`) and a plain `find` will not follow one, so it reports nothing while the file sits right there; a `plugins/*/` glob is worse still, because in zsh an unmatched glob aborts the command before it runs — and the same line works in bash, which is what makes it hard to notice.
+**`find -L`, no `*` anywhere in it, and no `-maxdepth`** — the first two measured on 2026-08-17, the third is a GNU flag the BSD `find` on macOS does not have: it answers "unknown primary or operator", and the template is never found. Skills are installed as symlinks (`~/.claude/skills/neopilot` → `~/.agents/skills/neopilot`) and a plain `find` will not follow one, so it reports nothing while the file sits right there; a `plugins/*/` glob is worse still, because in zsh an unmatched glob aborts the command before it runs — and the same line works in bash, which is what makes it hard to notice. The match is on the whole path, `-path '*/neopilot/phases/…'`, not on the filename alone: a bare `-name` picks up any installed skill that ships a file of the same name (autopilot has one), and `head -1` would then copy its template — and its `sync.py` — as ours.
 
-Empty output means the skill lives somewhere none of those five roots cover: widen the search once, by hand, and carry on. Never regenerate the template, never read it into context, never edit it after the copy.
+Empty output means the skill lives somewhere none of those roots cover: widen the search once, by hand, and carry on. Never regenerate the template, never read it into context, never edit it after the copy.
 
 **`index.html` is not a second dashboard — it is the name under which the server hands the same file out at `/`.** Without it `python3 -m http.server` answers the directory with a *listing*, and the pane in §3 can only be pointed at an origin, never at a path: one dropped navigation and the user spends the run reading file names (measured 2026-08-18). A symlink, not a copy — a copy is a second dashboard that ages; where `ln` can only copy (Windows without developer mode), `sync.py` rewrites the file into a redirect shim to `dashboard.html` on every call, so `/` can never serve a stale snapshot. If `ln` refuses outright, §3 still navigates to `/dashboard.html`.
 
@@ -101,7 +101,7 @@ Three of those fields exist because the orchestrator's context does not survive 
 
 **Never put a secret value in here.** `emptyEnv` holds names only — the whole point of the list.
 
-**ISO 8601 with the offset**, always: `2026-08-07T14:02:06+03:00`. A bare `14:50` gives an invalid date and a dead dash on the dashboard. Read the clock with `date -Iseconds` at the moment the thing happens — **seconds are part of the answer**, and a column of times all ending in `:00` is the visible tell that they were written from memory.
+**ISO 8601 with the offset**, always: `2026-08-07T14:02:06+03:00`. A bare `14:50` gives an invalid date and a dead dash on the dashboard. Read the clock with `date -Iseconds` at the moment the thing happens — on macOS `date` is BSD and has no `-I`, so `python3 -c 'from datetime import datetime; print(datetime.now().astimezone().isoformat(timespec="seconds"))'` gives the same mark — **seconds are part of the answer**, and a column of times all ending in `:00` is the visible tell that they were written from memory.
 
 ## 3. Open it once, by you
 

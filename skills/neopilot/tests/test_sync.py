@@ -6,8 +6,8 @@ Sandbox: sync.py is copied into a temp directory — there it IS the run's
 written beside it; sync is invoked as a subprocess with --no-serve — no
 network, no servers.
 
-Run:     python tests/test_sync.py            (from the skill root or anywhere)
-         python -m unittest tests.test_sync -v
+Run:     python3 tests/test_sync.py            (from the skill root or anywhere)
+         python3 -m unittest tests.test_sync -v
 """
 
 import importlib.util
