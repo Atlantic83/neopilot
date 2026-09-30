@@ -468,6 +468,34 @@ All of this is ordinary markdown. You can open it and read it: [skills/neopilot/
 
 ---
 
+## Why I built NeoPilot
+
+For a long time I used the two best skill collections for agentic development: [obra/superpowers](https://github.com/obra/superpowers) and [mattpocock/skills](https://github.com/mattpocock/skills). Good tools built by talented people — but built for a different user: a developer who reviews every step.
+
+Two problems kept coming back.
+
+**Requirements evaporate between stages.** Brainstorm → design → plan → build — and somewhere around step three, half of what you asked for at the start has quietly stopped existing. Not rejected, not re-decided — gone. The spec becomes the only source of truth, and the spec is the agent's paraphrase of your words. If it mistranslated you, the error rides all the way to delivery: the final review checks "does the code match the spec", not "did you get what you asked for".
+
+**You run the pipeline by hand.** You have to know the conveyor, know which skill fires next, and remember which ticket or ledger everything stopped on if the session broke. You become the orchestrator. "One dialogue → finished project" doesn't work there by design — a big idea gets spread across sessions, and you pick up the thread again every time.
+
+Then it clicked: it's one problem, not two. Both come from the same place — **your original words are stored nowhere, and nothing checks the result against them.**
+
+Plus the smaller frictions: your involvement level is baked into the design (no "don't ask me anything" and no "strictly by the brief"); progress is buried in tracker tickets and ledger files; state lives as snapshots, not a machine-readable contract you can resume from; no explicit secrets policy; TDD mandated for everything, with no alternative judge for work that tests can't judge; and your project's memory outsourced to an external tracker.
+
+So I wrote down the rules NeoPilot has to keep no matter what:
+
+1. **Your words are the contract.** The brief becomes numbered requirements, verbatim. Only you can remove one — in your own words. Every phase is gated against the manifest.
+2. **Blind acceptance at the end.** A separate agent gets only your original text and the finished project — no spec. If the spec ever mistranslated you, this is where it surfaces.
+3. **One dialogue, not manual conveyor operation.** Mode (`full`/`semi`/`interview`/`manual`) and depth (`strict`/normal/`deep`) are dials you can turn mid-run. The manifest gates never come off.
+4. **Progress you can see.** The dashboard opens itself; brief coverage is tracked separately from task progress — "tasks 100% done, brief 70% covered" is exactly what checklists miss.
+5. **Say "resume" and keep going.** State lives in `state.js`, not in anyone's memory.
+6. **Secrets are never touched.** Never requested, redacted before they reach a file.
+7. **The project remembers itself.** `CLAUDE.md`/`AGENTS.md` from step one; ADRs for decisions worth outliving the run.
+
+One small irony: the fight against context loss started by defending the context itself — each phase's rules load just-in-time, so they don't settle into the orchestrator's head from the first message only to get lost on the way.
+
+---
+
 ## License
 
 [MIT](LICENSE) © Atlantic83 — free to use, modify, and distribute, including in commercial projects.
