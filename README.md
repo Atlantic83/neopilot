@@ -16,12 +16,12 @@ NeoPilot is a development framework, a skill that takes your idea, asks question
 
 
 <p align="center">
-  <a href="assets/neopilot-dashboard.png"><img src="assets/dash-metrics.png" width="380" alt="Metrics: project progress, brief coverage, time, debt"></a>
-  <a href="assets/neopilot-dashboard.png"><img src="assets/dash-stages.png" width="380" alt="Stages: the full cycle from preparation to acceptance"></a>
-  <a href="assets/neopilot-dashboard.png"><img src="assets/dash-build.png" width="380" alt="Build progress: tasks by wave, what runs in parallel"></a>
+  <a href="assets/dash-metrics.png"><img src="assets/dash-metrics.png" width="380" alt="Metrics: project progress, brief coverage, time, debt"></a>
+  <a href="assets/dash-stages.png"><img src="assets/dash-stages.png" width="380" alt="Stages: the full cycle from preparation to acceptance"></a>
+  <a href="assets/dash-build.png"><img src="assets/dash-build.png" width="380" alt="Build progress: tasks by wave, what runs in parallel"></a>
 </p>
 
-<p align="center"><sub>Metrics · stages · build progress — <a href="assets/neopilot-dashboard.png">open the full dashboard</a></sub></p>
+<p align="center"><sub>Metrics · stages · build progress — click a screenshot for full size</sub></p>
 
 **And you can see what's happening at all times.** At the start of a build the agent opens the dashboard itself — a single HTML file you don't have to find or launch. It shows how much of the project is already done, how much of your task is covered, which stage the build is at, what is happening right now, and how much is left. Timers run live, the page refreshes itself, no internet needed.
 
@@ -457,7 +457,7 @@ skills/neopilot/
 └── prompts/                   ← material for subagents, not for the orchestrator
     └── craft-review.md         what the code-quality reviewer judges by
 
-assets/                         ← logo
+assets/                         ← logo, dashboard screenshots, architecture diagrams
 ```
 
 The `phases/` files are read by the agent one at a time, only when the corresponding phase begins — so memory always holds exactly what's needed right now.
